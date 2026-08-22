@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Bank - Professional Banking ERP</title>
+    
+    <!-- Bootstrap 5 CSS & FontAwesome Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- jsPDF & AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+    <style>
+        :root {
+            --sidebar-bg: #0b1329;
+            --sidebar-hover: #1c2b4e;
+            --primary-accent: #2563eb;
+            --primary-gradient: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            --success-gradient: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            --danger-gradient: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            --body-bg: #f1f5f9;
+            --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        }
+
+        body {
+            background-color: var(--body-bg);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            position: fixed;
+            top: 0;
+            left: 0;
+            color: #fff;
+            z-index: 100;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar .brand {
+            padding: 24px 20px;
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #60a5fa;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding: 15px 10px;
+            margin: 0;
+        }
+
+        .sidebar ul li a {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .sidebar ul li a:hover {
+            background: var(--sidebar-hover);
+            color: #f8fafc;
+        }
+
+        .sidebar ul li a.active {
+            background: var(--primary-gradient);
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+        }
+
+        /* Main Workspace */
+        .main-content {
+            margin-left: 260px;
+            padding: 35px;
+        }
+
+        .card-custom {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 8px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 11px 16px;
+            border: 1px solid #cbd5e1;
+            font-size: 14px;
+            background-color: #f8fafc;
+            transition: all 0.2s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #ffffff;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-theme {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 11px 24px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+            transition: all 0.2s ease;
+        }
+
+        .btn-theme:hover {
+            opacity: 0.95;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: #e2e8f0;
+            color: #475569;
+            border: none;
+            border-radius: 10px;
+            padding: 11px 24px;
+            font-weight: 600;
+        }
+
+        .btn-reset:hover {
+            background: #cbd5e1;
+            color: #1e293b;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Modern Glassmorphic Popup Modal Styling */
+        .modal-popup-content {
+            border-radius: 24px !important;
+            border: none !important;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+            overflow: hidden;
+            background: #ffffff;
+        }
+
+        .popup-header-banner {
+            padding: 30px 20px 20px 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+
+        .popup-icon-circle {
+            width: 76px;
+            height: 76px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px auto;
+            font-size: 36px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .receipt-card {
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 14px;
+            padding: 18px;
+            text-align: left;
+            margin-top: 15px;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .receipt-row:last-child {
+            margin-bottom: 0;
+            padding-top: 10px;
+            border-top: 1px dashed #cbd5e1;
+        }
+
+        .receipt-key {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .receipt-value {
+            color: #0f172a;
+            font-weight: 700;
+        }
+
+        /* Modern Table Badge Styling */
+        .badge-status-active {
+            background-color: #dcfce7;
+            color: #15803d;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #bbf7d0;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-status-inactive {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid #fecaca;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-building-columns"></i> Real Bank
+        </div>
+        <ul>
+            <li><a href="#" class="active" onclick="switchTab('newCustomer', this)"><i class="fa-solid fa-user-plus"></i> New Customer</a></li>
+            <li><a href="#" onclick="switchTab('searchCustomer', this)"><i class="fa-solid fa-magnifying-glass"></i> Search Customer</a></li>
+            <li><a href="#" onclick="switchTab('openAccount', this)"><i class="fa-solid fa-folder-plus"></i> Open Account</a></li>
+            <li><a href="#" onclick="switchTab('bankTransaction', this)"><i class="fa-solid fa-money-bill-transfer"></i> Bank Transaction</a></li>
+            <li><a href="#" onclick="switchTab('reportModule', this)"><i class="fa-solid fa-file-invoice-dollar"></i> Report</a></li>
+            <li><a href="#" onclick="switchTab('registeredCustomers', this); loadAllCustomers();"><i class="fa-solid fa-users"></i> Registered Customers</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="main-content">
+
+        <!-- 1. NEW CUSTOMER TAB -->
+        <div id="newCustomer" class="tab-content active">
+            <h3 class="section-title"><i class="fa-solid fa-user-plus text-primary"></i> Create New Customer Profile</h3>
+            <div class="card-custom">
+                <form id="customerForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" id="fullName" class="form-control" placeholder="Enter full name (Alphabets only)" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Mobile Number</label>
+                            <input type="text" id="mobileNo" maxlength="10" class="form-control" placeholder="10 Digit Mobile Number" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Gender</label>
+                            <select id="gender" class="form-select" required>
+                                <option value="">Select Gender</option>
+                                <option value="MALE">Male</option>
+                                <option value="FEMALE">Female</option>
+                                <option value="OTHER">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">PAN Number</label>
+                            <input type="text" id="panNo" maxlength="10" class="form-control" placeholder="e.g. ABCDE1234F" style="text-transform: uppercase;" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Aadhar Number</label>
+                            <input type="text" id="aadharNo" maxlength="12" class="form-control" placeholder="12 Digit Aadhar Card No" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email ID</label>
+                            <input type="email" id="email" class="form-control" placeholder="name@domain.com" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Current Address</label>
+                            <textarea id="address" class="form-control" rows="2" placeholder="Full residential physical address" required></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="button" onclick="submitNewCustomer()" class="btn btn-theme">Create Customer Profile</button>
+                        <button type="reset" class="btn btn-reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. SEARCH CUSTOMER TAB -->
+        <div id="searchCustomer" class="tab-content">
+            <h3 class="section-title"><i class="fa-solid fa-magnifying-glass text-primary"></i> Search Customer</h3>
+            <div class="card-custom">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">Customer ID</label>
+                        <input type="number" id="searchCustId" class="form-control" placeholder="Enter Customer Reference ID">
+                    </div>
+                    <div class="col-md-6 d-flex gap-2">
+                        <button type="button" onclick="fetchCustomerById()" class="btn btn-theme"><i class="fa-solid fa-search"></i> Search Customer</button>
+                        <button type="button" onclick="document.getElementById('searchCustId').value=''" class="btn btn-reset">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. OPEN ACCOUNT TAB -->
+        <div id="openAccount" class="tab-content">
+            <h3 class="section-title"><i class="fa-solid fa-folder-plus text-primary"></i> Open Bank Account Ledger</h3>
+            <div class="card-custom">
+                <form id="openAccountForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Customer ID (Reference)</label>
+                            <input type="number" id="openCustId" class="form-control" placeholder="Valid target customer profile id" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Account Holder Name</label>
+                            <input type="text" id="openCustName" class="form-control" placeholder="Holder legal identity name" required>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Account Category Type (Nature)</label>
+                            <select id="openAccType" class="form-select" required>
+                                <option value="">Select Account Type</option>
+                                <option value="SB">Savings Bank (SB - 10)</option>
+                                <option value="CA">Current Account (CA - 01)</option>
+                                <option value="RD">Recurring Deposit (RD - 08)</option>
+                                <option value="FD">Fixed Deposit (FD - 07)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="button" onclick="submitOpenAccount()" class="btn btn-theme">Open Account Registry</button>
+                        <button type="reset" class="btn btn-reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 4. BANK TRANSACTION TAB -->
+        <div id="bankTransaction" class="tab-content">
+            <h3 class="section-title"><i class="fa-solid fa-money-bill-transfer text-primary"></i> Bank Transaction</h3>
+            <div class="card-custom">
+                <form id="tranForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Account Category</label>
+                            <select id="tranAccCategory" class="form-select" required>
+                                <option value="SB">Savings Bank (SB)</option>
+                                <option value="CA">Current Account (CA)</option>
+                                <option value="RD">Recurring Deposit (RD)</option>
+                                <option value="FD">Fixed Deposit (FD)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Account Number</label>
+                            <input type="text" id="tranAccNo" class="form-control" placeholder="Enter Account Number" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Transaction Type</label>
+                            <select id="tranType" class="form-select" required>
+                                <option value="CREDIT">CREDIT (Deposit)</option>
+                                <option value="DEBIT">DEBIT (Withdrawal)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Transaction Mode</label>
+                            <select id="tranMode" class="form-select" required>
+                                <option value="CASH">CASH</option>
+                                <option value="TRANSFER">TRANSFER</option>
+                            </select>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label">Transaction Amount (₹)</label>
+                            <input type="number" id="tranAmount" class="form-control" placeholder="Enter amount" required>
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="button" onclick="executeBankTransaction()" class="btn btn-theme">Submit Transaction</button>
+                        <button type="reset" class="btn btn-reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 5. REPORT MODULE -->
+        <div id="reportModule" class="tab-content">
+            <h3 class="section-title"><i class="fa-solid fa-file-invoice-dollar text-primary"></i> Real Bank - Transaction Details</h3>
+            <div class="card-custom">
+                <form id="reportForm">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Report Type</label>
+                            <select id="reportType" class="form-select" onchange="toggleIndividualAccField()">
+                                <option value="ALL">ALL Accounts Statement</option>
+                                <option value="INDIVIDUAL">INDIVIDUAL Account Statement</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4" id="individualAccGroup" style="display: none;">
+                            <label class="form-label">Account Number</label>
+                            <input type="text" id="reportAccNo" class="form-control" placeholder="Target Account Number">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">From Date</label>
+                            <input type="date" id="fromDate" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">To Date</label>
+                            <input type="date" id="toDate" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="button" onclick="generateReportPDF()" class="btn btn-theme bg-danger border-0"><i class="fa-solid fa-file-pdf me-1"></i> Download PDF Report</button>
+                        <button type="reset" onclick="resetReportForm()" class="btn btn-reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 6. REGISTERED CUSTOMERS -->
+        <div id="registeredCustomers" class="tab-content">
+            <h3 class="section-title"><i class="fa-solid fa-users text-primary"></i> Registered Customers</h3>
+            <div class="card-custom">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="text-muted small">Live customer database records</span>
+                    <button onclick="loadAllCustomers()" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-rotate me-1"></i> Refresh Data</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover border align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Cust ID</th>
+                                <th>Full Name</th>
+                                <th>Mobile No</th>
+                                <th>Email ID</th>
+                                <th>Gender</th>
+                                <th>PAN Number</th>
+                                <th>Aadhar Number</th>
+                                <th>Current Address</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <tr><td colspan="9" class="text-center py-4 text-muted">Click Refresh to load records.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ADVANCED GLASSMORPHIC POPUP MODAL -->
+    <div class="modal fade" id="statusPopupModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-popup-content">
+                <div class="popup-header-banner" id="popupHeaderBanner">
+                    <div class="popup-icon-circle">
+                        <i id="popupIcon" class="fa-solid fa-check"></i>
+                    </div>
+                    <h4 class="fw-bold m-0" id="popupMainHeading">Action Completed</h4>
+                    <p class="small opacity-75 m-0" id="popupSubHeading">Real Bank Executive System</p>
+                </div>
+                <div class="p-4 pt-2 text-center">
+                    <div id="popupReceiptContainer">
+                        <!-- Dynamic Receipt Output -->
+                    </div>
+                    <button type="button" class="btn btn-theme w-100 mt-4 py-2.5 rounded-3 fs-6" data-bs-dismiss="modal">OK / Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SEARCH CUSTOMER DETAILS MODAL -->
+    <div class="modal fade" id="customerDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 16px; border: none; box-shadow: 0 15px 30px rgba(0,0,0,0.2);">
+                <div class="modal-header text-white" style="background: var(--primary-gradient); border-radius: 16px 16px 0 0;">
+                    <h5 class="modal-title font-weight-bold"><i class="fa-solid fa-user-circle me-2"></i> Customer Full Details</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <table class="table table-borderless m-0">
+                        <tr><td class="text-muted">Customer ID:</td><td class="fw-bold" id="mCustId"></td></tr>
+                        <tr><td class="text-muted">Full Name:</td><td class="fw-bold" id="mName"></td></tr>
+                        <tr><td class="text-muted">Mobile No:</td><td class="fw-bold" id="mMobile"></td></tr>
+                        <tr><td class="text-muted">Email ID:</td><td class="fw-bold" id="mEmail"></td></tr>
+                        <tr><td class="text-muted">Gender:</td><td class="fw-bold" id="mGender"></td></tr>
+                        <tr><td class="text-muted">PAN Number:</td><td class="fw-bold" id="mPan"></td></tr>
+                        <tr><td class="text-muted">Aadhar Number:</td><td class="fw-bold" id="mAadhar"></td></tr>
+                        <tr><td class="text-muted">Address:</td><td class="fw-bold" id="mAddress"></td></tr>
+                        <tr><td class="text-muted">Account Status:</td><td><span class="badge badge-status-active" id="mStatus">ACTIVE</span></td></tr>
+                    </table>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-secondary px-4 rounded-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap & Custom JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // API Base URL Setup
+        const API_BASE = "http://localhost:8080/api";
+
+        function showAdvancedPopup(title, subTitle, type = 'success', detailsObj = null) {
+            const banner = document.getElementById('popupHeaderBanner');
+            const icon = document.getElementById('popupIcon');
+            const mainHead = document.getElementById('popupMainHeading');
+            const subHead = document.getElementById('popupSubHeading');
+            const receiptBox = document.getElementById('popupReceiptContainer');
+
+            mainHead.innerText = title;
+            subHead.innerText = subTitle;
+
+            if(type === 'success') {
+                banner.style.background = 'var(--success-gradient)';
+                icon.className = 'fa-solid fa-circle-check';
+            } else if(type === 'error') {
+                banner.style.background = 'var(--danger-gradient)';
+                icon.className = 'fa-solid fa-circle-xmark';
+            } else {
+                banner.style.background = 'var(--primary-gradient)';
+                icon.className = 'fa-solid fa-circle-info';
+            }
+
+            if(detailsObj) {
+                let rowsHtml = '';
+                for(let key in detailsObj) {
+                    rowsHtml += `
+                        <div class="receipt-row">
+                            <span class="receipt-key">${key}:</span>
+                            <span class="receipt-value">${detailsObj[key]}</span>
+                        </div>
+                    `;
+                }
+                receiptBox.innerHTML = `<div class="receipt-card">${rowsHtml}</div>`;
+            } else {
+                receiptBox.innerHTML = '';
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('statusPopupModal'));
+            modal.show();
+        }
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.sidebar ul li a').forEach(a => a.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        function toggleIndividualAccField() {
+            const rType = document.getElementById('reportType').value;
+            document.getElementById('individualAccGroup').style.display = (rType === 'INDIVIDUAL') ? 'block' : 'none';
+        }
+
+        function resetReportForm() {
+            document.getElementById('individualAccGroup').style.display = 'none';
+        }
+
+        // 1. Submit New Customer Profile
+        async function submitNewCustomer() {
+            const fullName = document.getElementById('fullName').value.trim();
+            const mobileNo = document.getElementById('mobileNo').value.trim();
+            const gender = document.getElementById('gender').value;
+            const panNo = document.getElementById('panNo').value.trim().toUpperCase();
+            const aadharNo = document.getElementById('aadharNo').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const address = document.getElementById('address').value.trim();
+
+            if(!/^[a-zA-Z\s]+$/.test(fullName)) {
+                showAdvancedPopup("Validation Failure", "Profile Check Error", "error", { "Field": "Full Name", "Error": "Must contain letters only" });
+                return;
+            }
+            if(!/^\d{10}$/.test(mobileNo)) {
+                showAdvancedPopup("Validation Failure", "Mobile Check Error", "error", { "Field": "Mobile Number", "Error": "Must be exactly 10 digits" });
+                return;
+            }
+            if(!gender) {
+                showAdvancedPopup("Validation Failure", "Selection Missing", "error", { "Field": "Gender", "Error": "Select option" });
+                return;
+            }
+            if(!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panNo)) {
+                showAdvancedPopup("Validation Failure", "PAN Pattern Error", "error", { "Field": "PAN Card", "Expected Format": "ABCDE1234F" });
+                return;
+            }
+            if(!/^\d{12}$/.test(aadharNo)) {
+                showAdvancedPopup("Validation Failure", "Aadhaar Length Error", "error", { "Field": "Aadhar Number", "Error": "Must be 12 digits" });
+                return;
+            }
+            if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showAdvancedPopup("Validation Failure", "Email Format Error", "error", { "Field": "Email ID", "Error": "Invalid pattern" });
+                return;
+            }
+
+            const payload = { fullName, mobileNo, gender, panNo, aadharNo, email, address };
+
+            try {
+                const res = await fetch(`${API_BASE}/customers`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    const data = await res.json();
+                    const createdId = data.custId || data.cust_id || data.id || 'N/A';
+                    showAdvancedPopup("Customer Profile Registered", "Real Bank Central Registry Updated", "success", {
+                        "Generated ID": "#" + createdId,
+                        "Full Name": fullName,
+                        "Mobile Number": mobileNo,
+                        "Record Status": "ACTIVE"
+                    });
+                    document.getElementById('customerForm').reset();
+                } else {
+                    showAdvancedPopup("Registration Failed", "Server Error", "error", { "Reason": "Could not execute database insert" });
+                }
+            } catch(e) {
+                showAdvancedPopup("Server Connection Error", "Host Unreachable", "error", { "Target": API_BASE });
+            }
+        }
+
+        // 2. Search Customer Popup
+        async function fetchCustomerById() {
+            const id = document.getElementById('searchCustId').value;
+            if(!id) {
+                showAdvancedPopup("Search Input Missing", "Validation Check", "error", { "Required": "Customer ID field cannot be empty" });
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_BASE}/customers/${id}`);
+                if(res.ok) {
+                    const data = await res.json();
+                    
+                    document.getElementById('mCustId').innerText = "#" + (data.custId || data.cust_id || data.id || id);
+                    document.getElementById('mName').innerText = data.fullName || data.custName || data.name || '-';
+                    document.getElementById('mMobile').innerText = data.mobileNo || data.mobile_no || data.mobile || '-';
+                    document.getElementById('mEmail').innerText = data.email || '-';
+                    document.getElementById('mGender').innerText = data.gender || '-';
+                    document.getElementById('mPan').innerText = data.panNo || data.pan_no || data.pan || '-';
+                    document.getElementById('mAadhar').innerText = data.aadharNo || data.aadhar_no || data.aadhar || '-';
+                    document.getElementById('mAddress').innerText = data.address || '-';
+                    
+                    const st = (data.status || 'ACTIVE').toUpperCase();
+                    const stBadge = document.getElementById('mStatus');
+                    stBadge.innerText = st;
+                    stBadge.className = st === 'ACTIVE' ? 'badge badge-status-active' : 'badge badge-status-inactive';
+
+                    const modal = new bootstrap.Modal(document.getElementById('customerDetailModal'));
+                    modal.show();
+                } else {
+                    showAdvancedPopup("Lookup Failed", "Database Empty", "error", { "Customer Reference": "#" + id, "Status": "Not Registered" });
+                }
+            } catch(e) {
+                showAdvancedPopup("Network Timeout", "Backend Error", "error", { "Host": API_BASE });
+            }
+        }
+
+        // 3. Open Account
+        async function submitOpenAccount() {
+            const custId = document.getElementById('openCustId').value;
+            const custName = document.getElementById('openCustName').value.trim();
+            const acctype = document.getElementById('openAccType').value;
+
+            if(!custId || !custName || !acctype) {
+                showAdvancedPopup("Input Missing", "Form Check", "error", { "Action": "Complete all mandatory account inputs" });
+                return;
+            }
+
+            const payload = { custId, custName, acctype };
+
+            try {
+                const res = await fetch(`${API_BASE}/accounts`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    const data = await res.json();
+                    showAdvancedPopup("Bank Account Opened", "Real Bank Ledger Created", "success", {
+                        "Assigned Account No": data.acno || data.accountNo || 'Generated',
+                        "Account Holder": custName,
+                        "Category": acctype,
+                        "Opening Ledger Balance": "₹0.00"
+                    });
+                    document.getElementById('openAccountForm').reset();
+                } else {
+                    showAdvancedPopup("Opening Rejected", "Database Error", "error", { "Status": "Account creation failed" });
+                }
+            } catch(e) {
+                showAdvancedPopup("Backend Offline", "Server Error", "error", { "Port": "8080" });
+            }
+        }
+
+        // 4. Submit Bank Transaction
+        async function executeBankTransaction() {
+            const accCategory = document.getElementById('tranAccCategory').value;
+            const accNo = document.getElementById('tranAccNo').value.trim();
+            const tranType = document.getElementById('tranType').value;
+            const tranMode = document.getElementById('tranMode').value;
+            const amt = parseFloat(document.getElementById('tranAmount').value);
+
+            if(!accNo || isNaN(amt) || amt <= 0) {
+                showAdvancedPopup("Transaction Failure", "Input Error", "error", { "Check": "Valid Account Number and positive Amount required" });
+                return;
+            }
+
+            let expectedCode = "10";
+            if(accCategory === "CA") expectedCode = "01";
+            if(accCategory === "RD") expectedCode = "08";
+            if(accCategory === "FD") expectedCode = "07";
+
+            if(!accNo.includes(expectedCode)) {
+                showAdvancedPopup("Category Mismatch", "Validation Failed", "error", {
+                    "Selected Type": accCategory,
+                    "Target Account": accNo,
+                    "Expected Prefix Code": expectedCode
+                });
+                return;
+            }
+
+            const payload = {
+                accNo: accNo,
+                tranType: tranMode,
+                cramt: tranType === 'CREDIT' ? amt : 0.0,
+                dramt: tranType === 'DEBIT' ? amt : 0.0
+            };
+
+            try {
+                const res = await fetch(`${API_BASE}/transactions/recon`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                
+                if(res.ok) {
+                    showAdvancedPopup("Transaction Executed", "Real Bank Reconciliation Entry Saved", "success", {
+                        "Account Number": accNo,
+                        "Transaction Nature": tranType === 'CREDIT' ? 'CR (Deposit)' : 'DR (Withdrawal)',
+                        "Payment Mode": tranMode,
+                        "Amount Processed": "₹" + amt.toFixed(2),
+                        "System Timestamp": new Date().toLocaleString()
+                    });
+                    document.getElementById('tranForm').reset();
+                } else {
+                    const errorMsg = await res.text();
+                    showAdvancedPopup("Transaction Rejected", "Ledger Error", "error", { "Message": errorMsg });
+                }
+            } catch(e) {
+                showAdvancedPopup("Service Error", "Connection Failed", "error", { "Status": "Service Unavailable" });
+            }
+        }
+
+        // 5. Download PDF Report
+        async function generateReportPDF() {
+            const reportType = document.getElementById('reportType').value;
+            const fromDate = document.getElementById('fromDate').value;
+            const toDate = document.getElementById('toDate').value;
+            const accNo = document.getElementById('reportAccNo').value;
+
+            if(!fromDate || !toDate) {
+                showAdvancedPopup("Date Filter Required", "Form Check", "error", { "Mandatory": "Select both From Date and To Date" });
+                return;
+            }
+
+            let url = `${API_BASE}/reports/all?fromDate=${fromDate}&toDate=${toDate}`;
+            if(reportType === 'INDIVIDUAL') {
+                if(!accNo) {
+                    showAdvancedPopup("Account Number Missing", "Form Check", "error", { "Action": "Provide Target Account Number for Individual Report" });
+                    return;
+                }
+                url = `${API_BASE}/reports/individual?fromDate=${fromDate}&toDate=${toDate}&accNo=${accNo}`;
+            }
+
+            try {
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if(!data || data.length === 0) {
+                    showAdvancedPopup("No Statement Records", "Empty Result Set", "error", { "Query Date Range": `${fromDate} to ${toDate}`, "Status": "No records match" });
+                    return;
+                }
+
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+                doc.setFontSize(16);
+                doc.setTextColor(37, 99, 235);
+                doc.text("Real Bank - Transaction Details", 14, 15);
+
+                doc.setFontSize(9);
+                doc.setTextColor(50, 50, 50);
+                doc.text(`Report Scope: ${reportType} Accounts Statement`, 14, 21);
+                doc.text(`Query Date Filter: ${fromDate} to ${toDate}`, 14, 26);
+                if(reportType === 'INDIVIDUAL') {
+                    doc.text(`Filtered Account No: ${accNo}`, 14, 31);
+                }
+
+                const tableRows = [];
+                data.forEach(row => {
+                    tableRows.push([
+                        row.cust_id != null ? row.cust_id : '-',
+                        row.account_no != null ? row.account_no : (row.acno || '-'),
+                        row.full_name != null ? row.full_name : '-',
+                        row.email != null ? row.email : '-',
+                        row.mobile_no != null ? row.mobile_no : '-',
+                        row.pan_no != null ? row.pan_no : '-',
+                        row.cramt != null ? parseFloat(row.cramt).toFixed(2) : '0.00',
+                        row.dramt != null ? parseFloat(row.dramt).toFixed(2) : '0.00',
+                        row.tran_type != null ? row.tran_type : '-',
+                        row.dt != null ? row.dt : '-',
+                        row.balance != null ? parseFloat(row.balance).toFixed(2) : '0.00'
+                    ]);
+                });
+
+                doc.autoTable({
+                    head: [['cust_id', 'account_no', 'full_name', 'email', 'mobile_no', 'pan_no', 'cramt', 'dramt', 'tran_type', 'dt', 'balance']],
+                    body: tableRows,
+                    startY: reportType === 'INDIVIDUAL' ? 35 : 30,
+                    theme: 'striped',
+                    styles: { fontSize: 8, cellPadding: 2 },
+                    headStyles: { fillStyle: '#1e40af', textColor: 255, fontStyle: 'bold' }
+                });
+
+                doc.save(`Real_Bank_Report_${reportType}_${Date.now()}.pdf`);
+                showAdvancedPopup("Statement Downloaded", "PDF Generated", "success", {
+                    "Format": "A4 Landscape (11 Column Table)",
+                    "Generated Scope": reportType,
+                    "Records Compiled": data.length + " Rows"
+                });
+
+            } catch(e) {
+                showAdvancedPopup("PDF Download Fault", "Processing Error", "error", { "Cause": "Unable to render PDF document" });
+            }
+        }
+
+        // 6. ALL CUSTOMERS TABLE - SAFELY MAPPED FOR ALL 9 COLUMNS
+        async function loadAllCustomers() {
+            const tbody = document.getElementById('customersTableBody');
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i> Loading customer data...</td></tr>`;
+
+            try {
+                const res = await fetch(`${API_BASE}/customers`);
+                if(!res.ok) throw new Error(`Status: ${res.status}`);
+
+                const data = await res.json();
+                tbody.innerHTML = "";
+
+                if(!Array.isArray(data) || data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-muted">No registered customers found in database.</td></tr>`;
+                    return;
+                }
+
+                data.forEach(c => {
+                    // Entity Object Keys Fallback Safety
+                    const custId = c.custId || c.cust_id || c.id || '-';
+                    const fullName = c.fullName || c.custName || c.full_name || c.name || '-';
+                    const mobileNo = c.mobileNo || c.mobile_no || c.mobile || '-';
+                    const email = c.email || '-';
+                    const gender = c.gender || '-';
+                    const panNo = c.panNo || c.pan_no || c.pan || '-';
+                    const aadharNo = c.aadharNo || c.aadhar_no || c.aadhar || '-';
+                    const address = c.address || '-';
+                    
+                    const rawStatus = (c.status || 'ACTIVE').toUpperCase();
+                    const statusBadge = rawStatus === 'ACTIVE' 
+                        ? `<span class="badge badge-status-active">ACTIVE</span>` 
+                        : `<span class="badge badge-status-inactive">${rawStatus}</span>`;
+
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold">#${custId}</td>
+                            <td>${fullName}</td>
+                            <td>${mobileNo}</td>
+                            <td>${email}</td>
+                            <td>${gender}</td>
+                            <td>${panNo}</td>
+                            <td>${aadharNo}</td>
+                            <td>${address}</td>
+                            <td>${statusBadge}</td>
+                        </tr>
+                    `;
+                });
+            } catch(e) {
+                console.error("Fetch Error Details:", e);
+                tbody.innerHTML = `<tr><td colspan="9" class="text-center py-4 text-danger">Failed to load customer records.</td></tr>`;
+                showAdvancedPopup("Data Fetch Fault", "Database Connection Error", "error", { 
+                    "Target Endpoint": `${API_BASE}/customers`,
+                    "Error Details": e.message || "Unable to reach Spring Boot Backend Server"
+                });
+            }
+        }
+    </script>
+</body>
+</html>
