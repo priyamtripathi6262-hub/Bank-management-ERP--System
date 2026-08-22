@@ -207,4 +207,4 @@ This project is open-source and available for learning purposes. Add a license o
 
 **[priyam tripathi ]**
 📧 priyamtripathi6262@gmail.com
-🔗 [LinkedIn](#) | [GitHub](#)
+🔗 [LinkedIn]=https://www.linkedin.com/in/priyam-tripathi-5107663a9?utm_source=share_via&utm_content=profile&utm_medium=member_android** | [GitHub](#)
